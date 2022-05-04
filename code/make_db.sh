@@ -9,16 +9,36 @@ source ~soft_bio_267/initializes/init_fln_dev
 
 BLASTDB=$SCRATCH/fln/databases/
 
+
+if [ ! -d "$BLASTDB" ]
+then
 mkdir $BLASTDB
+fi
+
+current=`pwd`
 cd $BLASTDB
-# Cambiar lo siguiente a simbolicos por cada uno delos archivos dat en las carpetas sprot y trembl. Los .dat deben estar en $SCRATCH/fln/databases/
-ln -s ~blast_db/20220406/trembl/uniprot_trembl_plants.dat.gz
-#ln -s ~blast_db/20220406/sprot
-#ln -s ~blast_db/20220406/trembl
+
+existenSymlinks=$(find ./ -type l -ls)
+
+if [ -z "$existenSymlinks" ]
+then
+ln -s ~blast_db/20220406/trembl/uniprot_trembl_mammals.dat.gz uniprot_trembl_mammals.dat.gz
+ln -s ~blast_db/20220406/trembl/uniprot_trembl_vertebrates.dat.gz uniprot_trembl_vertebrates.dat.gz
+ln -s ~blast_db/20220406/trembl/uniprot_trembl_invertebrates.dat.gz uniprot_trembl_invertebrates.dat.gz
+ln -s ~blast_db/20220406/trembl/uniprot_trembl_plants.dat.gz uniprot_trembl_plants.dat.gz
+
+ln -s ~blast_db/20220406/sprot/uniprot_sprot_mammals.dat.gz uniprot_sprot_mammals.dat.gz
+ln -s ~blast_db/20220406/sprot/uniprot_sprot_vertebrates.dat.gz uniprot_sprot_vertebrates.dat.gz
+ln -s ~blast_db/20220406/sprot/uniprot_sprot_invertebrates.dat.gz uniprot_sprot_invertebrates.dat.gz
+ln -s ~blast_db/20220406/sprot/uniprot_sprot_plants.dat.gz uniprot_sprot_plants.dat.gz
+ln -s ~blast_db/20220406/sprot/uniprot_sprot_varsplic.fasta.gz uniprot_sprot_varsplic.fasta.gz
+fi
+
+cd $current
 
 download_fln_dbs.rb -u 'mammals,vertebrates,invertebrates,plants' -d -n
 make_user_db.rb -u plants -t 'Brassicaceae'
-#~pedro/dev_gems/full_dev/bin/make_user_db.rb -u invertebrates -t 'Diptera'
-#~pedro/dev_gems/full_dev/bin/make_user_db.rb -u vertebrates -t 'Galliformes'
-#~pedro/dev_gems/full_dev/bin/make_user_db.rb -u vertebrates -t 'Actinopterygii'
-#~pedro/dev_gems/full_dev/bin/make_user_db.rb -u mammals -t 'Laurasiatheria'
+make_user_db.rb -u invertebrates -t 'Diptera'
+make_user_db.rb -u vertebrates -t 'Galliformes'
+make_user_db.rb -u vertebrates -t 'Actinopterygii'
+make_user_db.rb -u mammals -t 'Laurasiatheria'
