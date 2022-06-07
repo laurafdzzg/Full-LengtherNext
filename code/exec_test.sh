@@ -10,7 +10,9 @@ fi
 # Download unigenes
 export UNIGEN_FOLDER=$SCRATCH/fln/raw_sequences
 if [ "$1" == "unigen" ]; then
+	if [ ! -d "$UNIGEN_FOLDER" ]; then
 	mkdir $UNIGEN_FOLDER
+	fi
 	wget -q ftp://ftp.ncbi.nlm.nih.gov/repository/UniGene/Drosophila_melanogaster/Dm.seq.all.gz -O $UNIGEN_FOLDER/Dm.seq.all.gz
 	wget -q ftp://ftp.ncbi.nlm.nih.gov/repository/UniGene/Gallus_gallus/Gga.seq.all.gz -O $UNIGEN_FOLDER/Gga.seq.all.gz
 	wget -q ftp://ftp.ncbi.nlm.nih.gov/repository/UniGene/Arabidopsis_thaliana/At.seq.all.gz -O $UNIGEN_FOLDER/At.seq.all.gz
@@ -23,11 +25,14 @@ if [ "$1" == "unigen" ]; then
 	rm $UNIGEN_FOLDER/*.seq.all
 fi
 
+export FULL_LENGTH_FOLDER=$SCRATCH/fln/seqs_full_length
 if [ "$1" == "get_sequences" ]; then
+	if [ ! -d "$FULL_LENGTH_FOLDER" ]; then
+        mkdir $FULL_LENGTH_FOLDER
+	fi
 	# Select full length sequences
 	source ~soft_bio_267/initializes/init_autoflow
-	export FULL_LENGTH_FOLDER=$SCRATCH/fln/seqs_full_length
-	AutoFlow -w template/tests_template -s -c 10  -o $FULL_LENGTH_FOLDER 
+	AutoFlow -w template/tests_template -s -c 10  -o $FULL_LENGTH_FOLDER -m 40gb 
 fi
 
 exit

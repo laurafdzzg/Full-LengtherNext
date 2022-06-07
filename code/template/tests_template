@@ -6,30 +6,31 @@
 # [lcpu]	->		indica al manager que el comando admite varias cpus y que debe asignarle las q crea convenientes
 # % 	->		Asumir que la tarea ya se ha realizado
 
-$drosophila_all_unigenes = ~$SCRATCH/fln/raw_sequences/Drosophila_melanogaster_cln.fasta
-$gallus_all_unigenes = ~$SCRATCH/fln/raw_sequences/Gallus_gallus_cln.fasta
-$sus_all_unigenes = ~$SCRATCH/fln/raw_sequences/Sus_scrofa_cln.fasta
-$arabidopsis_all_unigenes = ~$SCRATCH/fln/raw_sequences/Arabidopsis_thaliana_cln.fasta
-$db = ~$SCRATCH/fln/databases
-$black_list = ~/fln/def_test/seq_black_list
+$drosophila_all_unigenes = $SCRATCH/fln/raw_sequences/Drosophila_melanogaster_cln.fasta
+$gallus_all_unigenes = $SCRATCH/fln/raw_sequences/Gallus_gallus_cln.fasta
+$sus_all_unigenes = $SCRATCH/fln/raw_sequences/Sus_scrofa_cln.fasta
+$arabidopsis_all_unigenes = $SCRATCH/fln/raw_sequences/Arabidopsis_thaliana_cln.fasta
+$db = $SCRATCH/fln/databases
+$black_list = $SCRATCH/fln/seq_black_list
+
 
 #Cdhit reduce la cantidad de proteinas a usar y hace que sean lo mas distintas posibles (-c 0.4)
 drosophila_get_prots){
 	module load cdhit
-	module load blast_plus
-	blastdbcmd -db $db/sp_invertebrates/sp_invertebrates.fasta_cln -entry all > seq.fasta
-	blastdbcmd -db $db/tr_invertebrates/tr_invertebrates.fasta_cln -entry all >> seq.fasta
+	module load blast_plus/2.12.0+
+	blastdbcmd -db $db/sp_invertebrates/sp_invertebrates -entry all > seq.fasta
+	blastdbcmd -db $db/tr_invertebrates/tr_invertebrates -entry all >> seq.fasta
 	grep 'Drosophila melanogaster' seq.fasta| sed 's/>//g'|grep 'sp|' -v  > uniprot.lst
 	lista_to_fasta.rb seq.fasta uniprot.lst  > prot.fasta
-	?
+	? 
 	cd-hit -i prot.fasta -o prot_filtered.fasta -c 0.4 -M 0 -n 2 -T [cpu]
 }
 
 gallus_get_prots){
         module load cdhit
-        module load blast_plus
-        blastdbcmd -db $db/sp_vertebrates/sp_vertebrates.fasta_cln -entry all > seq.fasta
-        blastdbcmd -db $db/tr_vertebrates/tr_vertebrates.fasta_cln -entry all >> seq.fasta
+        module load blast_plus/2.12.0+
+        blastdbcmd -db $db/sp_vertebrates/sp_vertebrates -entry all > seq.fasta
+        blastdbcmd -db $db/tr_vertebrates/tr_vertebrates -entry all >> seq.fasta
         grep 'Gallus gallus' seq.fasta| sed 's/>//g'|grep 'sp|' -v  > uniprot.lst
         lista_to_fasta.rb seq.fasta uniprot.lst  > prot.fasta
         ?
@@ -39,9 +40,9 @@ gallus_get_prots){
 
 sus_get_prots){
         module load cdhit
-        module load blast_plus
-        blastdbcmd -db $db/sp_mammals/sp_mammals.fasta_cln -entry all > seq.fasta
-        blastdbcmd -db $db/tr_mammals/tr_mammals.fasta_cln -entry all >> seq.fasta
+        module load blast_plus/2.12.0+
+        blastdbcmd -db $db/sp_mammals/sp_mammals -entry all > seq.fasta
+        blastdbcmd -db $db/tr_mammals/tr_mammals -entry all >> seq.fasta
         grep 'Sus scrofa' seq.fasta| sed 's/>//g'|grep 'sp|' -v  > uniprot.lst
         lista_to_fasta.rb seq.fasta uniprot.lst  > prot.fasta
         ?
@@ -50,9 +51,9 @@ sus_get_prots){
 
 arabidopsis_get_prots){
         module load cdhit
-        module load blast_plus
-        blastdbcmd -db $db/sp_plants/sp_plants.fasta_cln -entry all > seq.fasta
-        blastdbcmd -db $db/tr_plants/tr_plants.fasta_cln -entry all >> seq.fasta
+        module load blast_plus/2.12.0+
+        blastdbcmd -db $db/sp_plants/sp_plants -entry all > seq.fasta
+        blastdbcmd -db $db/tr_plants/tr_plants -entry all >> seq.fasta
         grep 'Arabidopsis thaliana' seq.fasta| sed 's/>//g'|grep 'sp|' -v  > uniprot.lst
         lista_to_fasta.rb seq.fasta uniprot.lst  > prot.fasta
         ?
@@ -61,50 +62,48 @@ arabidopsis_get_prots){
 
 
 drosophila_get_unigenes){
-	module load scbi_distributed_blast
-	module load blast_plus
+	. ~soft_bio_267/initializes/init_scbi_distributed_blast
 	mkdir db
 	makeblastdb -in drosophila_get_prots)/prot_filtered.fasta -dbtype prot -out db/prot_filtered.fasta
 	?
-	scbi_distributed_blast -w [lcpu] -g 50 'blastx -query $drosophila_all_unigenes -db db/prot_filtered.fasta -max_target_seqs 1 -outfmt "6 std slen qlen" -out result'
+	scbi_distributed_blast -w [lcpu] -g 50 'blastx -query '$drosophila_all_unigenes' -db db/prot_filtered.fasta -max_target_seqs 1 -outfmt "6 std slen qlen" -out result'
 }
 
 gallus_get_unigenes){
-	module load scbi_distributed_blast
-	module load blast_plus
+	. ~soft_bio_267/initializes/init_scbi_distributed_blast
 	mkdir db
 	makeblastdb -in gallus_get_prots)/prot_filtered.fasta -dbtype prot -out db/prot_filtered.fasta
 	?
-	scbi_distributed_blast -w [lcpu] -g 50 'blastx -query $gallus_all_unigenes -db db/prot_filtered.fasta -max_target_seqs 1 -outfmt "6 std slen qlen" -out result'
+	scbi_distributed_blast -w [lcpu] -g 50 'blastx -query '$gallus_all_unigenes' -db db/prot_filtered.fasta -max_target_seqs 1 -outfmt "6 std slen qlen" -out result'
 }
 
 sus_get_unigenes){
-	module load scbi_distributed_blast
-	module load blast_plus
+	. ~soft_bio_267/initializes/init_scbi_distributed_blast
 	mkdir db
 	makeblastdb -in sus_get_prots)/prot_filtered.fasta -dbtype prot -out db/prot_filtered.fasta
 	?
-	scbi_distributed_blast -w [lcpu] -g 50 'blastx -query $sus_all_unigenes -db db/prot_filtered.fasta -max_target_seqs 1 -outfmt "6 std slen qlen" -out result'
+	scbi_distributed_blast -w [lcpu] -g 50 'blastx -query '$sus_all_unigenes' -db db/prot_filtered.fasta -max_target_seqs 1 -outfmt "6 std slen qlen" -out result'
 }
 
 arabidopsis_get_unigenes){
-	module load scbi_distributed_blast
-	module load blast_plus
+	. ~soft_bio_267/initializes/init_scbi_distributed_blast
 	mkdir db
 	makeblastdb -in arabidopsis_get_prots)/prot_filtered.fasta -dbtype prot -out db/prot_filtered.fasta
 	?
-	scbi_distributed_blast -w [lcpu] -g 50 'blastx -query $arabidopsis_all_unigenes -db db/prot_filtered.fasta -max_target_seqs 1 -outfmt "6 std slen qlen" -out result'
+	scbi_distributed_blast -w [lcpu] -g 50 'blastx -query '$arabidopsis_all_unigenes' -db db/prot_filtered.fasta -max_target_seqs 1 -outfmt "6 std slen qlen" -out result'
 }
 
 drosophila_fln_sure_FL){
+	. ~soft_bio_267/initializes/init_ruby
 	?
 	take_full_length.rb drosophila_get_unigenes)/result u > relations
 	table_header.rb -t relations > unigenes.lst
 	lista_to_fasta.rb $drosophila_all_unigenes unigenes.lst > unigenes_temp.fasta
-	lista_to_fasta.rb unigenes_temp.fasta $black_list/drosophila.lst r > unigenes.fasta
+	lista_to_fasta.rb unigenes_temp.fasta $black_list/drosophila.lst  r > unigenes.fasta
 }
 
 gallus_fln_sure_FL){
+	. ~soft_bio_267/initializes/init_ruby
 	?
 	take_full_length.rb gallus_get_unigenes)/result u > relations
 	table_header.rb -t relations > unigenes.lst
@@ -113,6 +112,7 @@ gallus_fln_sure_FL){
 }
 
 sus_fln_sure_FL){
+	. ~soft_bio_267/initializes/init_ruby
 	?
 	take_full_length.rb sus_get_unigenes)/result u > relations
 	table_header.rb -t relations > unigenes.lst
@@ -121,6 +121,7 @@ sus_fln_sure_FL){
 }
 
 arabidopsis_fln_sure_FL){
+	. ~soft_bio_267/initializes/init_ruby
 	?
 	take_full_length.rb arabidopsis_get_unigenes)/result u > relations
 	table_header.rb -t relations > unigenes.lst
@@ -139,3 +140,4 @@ results){
 	mv arabidopsis_fln_sure_FL)/unigenes.fasta ./full_length_arabidopsis.fasta
 	mv arabidopsis_fln_sure_FL)/utr ./full_length_arabidopsis.utr
 }
+
