@@ -1,9 +1,12 @@
 #! /usr/bin/env bash
 
 
-export BLASTDB=$SCRATCH/fln/databases/
+export BLASTDB=$SCRATCH/fln/databases
 # Download DBs
 if [ "$1" == "database" ]; then
+	if [ ! -d "$BLASTDB" ]; then
+	mkdir $BLASTDB
+	fi
 	sbatch make_db.sh
 fi
 
@@ -25,6 +28,7 @@ if [ "$1" == "unigen" ]; then
 	rm $UNIGEN_FOLDER/*.seq.all
 fi
 
+
 export FULL_LENGTH_FOLDER=$SCRATCH/fln/seqs_full_length
 if [ "$1" == "get_sequences" ]; then
 	if [ ! -d "$FULL_LENGTH_FOLDER" ]; then
@@ -35,15 +39,21 @@ if [ "$1" == "get_sequences" ]; then
 	AutoFlow -w template/tests_template -s -c 10  -o $FULL_LENGTH_FOLDER -m 40gb 
 fi
 
-exit
 
-export TEST_FOLDER=testing
-#mkdir $TEST_FOLDER
+
+export TEST_FOLDER=$SCRATCH/fln/testingR
 # Check full-length module
-AutoFlow -w check_fl_analysis_module_template -n 'cal' -c 16 -s -u 1 -o $TEST_FOLDER/fl_analisys -V '$FASTAS=~/fln/def_test/'$FULL_LENGTH_FOLDER'/mv_0000,$DB='$BLASTDB',$INIT_FILE=~pedro/fln/def_test/init,$RES =../../results' 
+if [ "$1" == "test" ]; then
+       if [ ! -d "$TEST_FOLDER" ]; then
+       mkdir $TEST_FOLDER
+       fi
+       source ~soft_bio_267/initializes/init_autoflow
+       AutoFlow -w template/check_fl_analysis_module_template -n 'cal' -c 16 -s -u 1 -o $TEST_FOLDER/fl_analisys -V '$FASTAS='$FULL_LENGTH_FOLDER'/mv_0000,$DB='$BLASTDB',$RES =../../results' -m 40gb -t '2-00:00:00'
+
+fi
 
 #Check USER-DB
-export REAL_TRANSCRIPTOME=transcriptome
+#export REAL_TRANSCRIPTOME=transcriptome
 #mkdir $REAL_TRANSCRIPTOME
 #wget -q http://www.juntadeandalucia.es/agriculturaypesca/ifapa/soleadb_ifapa/assemblies/download_unigenes/42 -O $REAL_TRANSCRIPTOME/solea_v4.0_unigenes.fasta
  
