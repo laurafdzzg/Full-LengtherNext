@@ -1,0 +1,74 @@
+$FASTAS=$SCRATCH/fln/seqs_full_length/mv_0000
+$DB=$SCRATCH/fln/databases
+$RES = ../../results
+$TEST=[deletions;insertions;mix;trimmed;paired]
+
+generate_test_fastas){
+	. ~soft_bio_267/initializes/init_ruby
+	?
+	make_test_dataset.rb -f $FASTAS/full_length_sus.fasta -d 2
+	make_test_dataset.rb -f $FASTAS/full_length_drosophila.fasta -d 2
+	make_test_dataset.rb -f $FASTAS/full_length_gallus.fasta -d 2
+	make_test_dataset.rb -f $FASTAS/full_length_arabidopsis.fasta -d 2
+	mkdir $RES
+}
+
+drosophila_all){
+	. ~soft_bio_267/initializes/init_fln_dev
+	?
+	full_lengther_next -f $FASTAS/full_length_drosophila.fasta -g invertebrates -c 50 -w [cpu] -z -u $DB/Diptera/Diptera -q d -a 'stp'
+	table_header.rb -t fln_results/pt_seqs -c 0 -f 4 -k 'Complete' > complete.lst
+	table_header.rb -t fln_results/pt_seqs -c 11,12,1 > UTR
+	cp fln_results/summary_stats.txt $RES/Drosophila_melanogaster
+}
+
+drosophila_$TEST){
+	. ~soft_bio_267/initializes/init_fln_dev
+	?
+        full_lengther_next -f generate_test_fastas)/full_length_drosophila.fasta_(*) -g invertebrates -c 50 -w [cpu] -z -u $DB/Diptera/Diptera -q d -a 'stp'
+}
+
+gallus_all){
+	. ~soft_bio_267/initializes/init_fln_dev
+      	?
+	full_lengther_next -f $FASTAS/full_length_gallus.fasta -g vertebrates -c 50 -w [cpu] -z -u $DB/Galliformes/Galliformes -q d -a 'stp'
+	table_header.rb -t fln_results/pt_seqs -c 0 -f 4 -k 'Complete' > complete.lst
+	table_header.rb -t fln_results/pt_seqs -c 11,12,1 > UTR
+	cp fln_results/summary_stats.txt $RES/Gallus_gallus
+}
+
+gallus_$TEST){
+	. ~soft_bio_267/initializes/init_fln_dev
+        ?
+        full_lengther_next -f generate_test_fastas)/full_length_gallus.fasta_(*) -g vertebrates -c 50 -w [cpu] -z -u $DB/Galliformes/Galliformes -q d -a 'stp'
+}
+
+sus_all){
+	. ~soft_bio_267/initializes/init_fln_dev
+	?
+	full_lengther_next -f $FASTAS/full_length_sus.fasta -g mammals -c 50 -w [cpu] -z -u $DB/Laurasiatheria/Laurasiatheria -q d -a 'stp'
+	table_header.rb -t fln_results/pt_seqs -c 0 -f 4 -k 'Complete' > complete.lst
+	table_header.rb -t fln_results/pt_seqs -c 11,12,1 > UTR
+	cp fln_results/summary_stats.txt $RES/Sus_scrofa
+}
+
+sus_$TEST){
+	. ~soft_bio_267/initializes/init_fln_dev
+        ?
+        full_lengther_next -f generate_test_fastas)/full_length_sus.fasta_(*) -g mammals -c 50 -w [cpu] -z -u $DB/Laurasiatheria/Laurasiatheria -q d -a 'stp'
+}
+
+arabidopsis_all){
+	. ~soft_bio_267/initializes/init_fln_dev
+	?
+	full_lengther_next -f $FASTAS/full_length_arabidopsis.fasta -g plants -c 50 -w [cpu] -z -u $DB/Brassicaceae/Brassicaceae -q d -a 'stp'
+	table_header.rb -t fln_results/pt_seqs -c 0 -f 4 -k 'Complete' > complete.lst
+	table_header.rb -t fln_results/pt_seqs -c 11,12,1 > UTR
+	cp fln_results/summary_stats.txt $RES/Arabidopsis_thaliana
+}
+
+arabidopsis_$TEST){
+	. ~soft_bio_267/initializes/init_fln_dev
+        ?
+        full_lengther_next -f generate_test_fastas)/full_length_arabidopsis.fasta_(*) -g plants -c 50 -w [cpu] -z -u $DB/Brassicaceae/Brassicaceae -q d -a 'stp'
+}
