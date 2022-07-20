@@ -52,11 +52,27 @@ if [ "$1" == "test" ]; then
 
 fi
 
-#Check USER-DB
-#export REAL_TRANSCRIPTOME=transcriptome
-#mkdir $REAL_TRANSCRIPTOME
-#wget -q http://www.juntadeandalucia.es/agriculturaypesca/ifapa/soleadb_ifapa/assemblies/download_unigenes/42 -O $REAL_TRANSCRIPTOME/solea_v4.0_unigenes.fasta
- 
-# Check chimeras module
-#AutoFlow -w check_chimeras_module_template -n 'cal' -c 16 -o $TEST_FOLDER/chimeras -V '$FASTAS=~/fln/def_test/'$TEST_FOLDER'/fl_analisys/make_test_dataset.rb_0000,$DB='$BLASTDB',$INIT_FILE=~pedro/fln/def_test/init'
 
+#Generate table
+export INDEX_FOLDER=$SCRATCH/fln/testingR/fl_analisys
+if [ "$1" == "generate_report" ]; then
+	if [ ! -d "reports_files" ]; then
+      	mkdir reports_files
+	fi
+	module load latex/3.14
+	source ~soft_bio_267/initializes/init_ruby
+	fln2pdf.rb $INDEX_FOLDER/index_execution 
+	mv report.* reports_files
+fi
+
+
+#Execute real transcriptomes
+export REAL_TRANSCRIPTOME_FOLDER=$SCRATCH/fln/real_transciptomes
+if [ "$1" == "execute_real_fasta" ]; then
+       if [ ! -d "$REAL_TRANSCRIPTOME_FOLDER" ]; then
+       mkdir $REAL_TRANSCRIPTOME_FOLDER
+       fi
+       source ~soft_bio_267/initializes/init_autoflow
+       AutoFlow -w template/analyze_real_transcriptomes -n 'cal' -c 50 -s -u 1 -o $REAL_TRANSCRIPTOME_FOLDER/fl_analisys -V '$FASTAS=/mnt/home/users/pab_001_uma/laurafg98/fln/fasta_files' -m 120gb -t '3-00:00:00'
+
+fi

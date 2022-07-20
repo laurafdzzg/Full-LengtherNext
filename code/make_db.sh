@@ -9,14 +9,8 @@ source ~soft_bio_267/initializes/init_fln_dev
 
 BLASTDB=$SCRATCH/fln/databases/
 
-
-if [ ! -d "$BLASTDB" ]
-then
-mkdir $BLASTDB
-fi
-
-current=`pwd`
 cd $BLASTDB
+current=`pwd`
 
 existenSymlinks=$(find ./ -type l -ls)
 
@@ -37,6 +31,7 @@ fi
 cd $current
 
 download_fln_dbs.rb -u 'mammals,vertebrates,invertebrates,plants' -d -n
+
 make_user_db.rb -u plants -t 'Brassicaceae'
 make_user_db.rb -u invertebrates -t 'Diptera'
 make_user_db.rb -u vertebrates -t 'Galliformes'
