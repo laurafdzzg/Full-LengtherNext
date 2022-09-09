@@ -7,7 +7,7 @@
 #SBATCH --output=job.%J.out
 source ~soft_bio_267/initializes/init_fln_dev
 
-BLASTDB=$SCRATCH/fln/databases/
+export BLASTDB=$SCRATCH/fln/databases/
 
 cd $BLASTDB
 current=`pwd`
