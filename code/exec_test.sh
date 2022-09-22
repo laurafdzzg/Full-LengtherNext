@@ -73,6 +73,6 @@ if [ "$1" == "execute_real_fasta" ]; then
        mkdir $REAL_TRANSCRIPTOME_FOLDER
        fi
        source ~soft_bio_267/initializes/init_autoflow
-       AutoFlow -w template/analyze_real_transcriptomes -n 'cal' -c 50 -s -u 1 -o $REAL_TRANSCRIPTOME_FOLDER/fl_analisys -V '$FASTAS=/mnt/home/users/pab_001_uma/laurafg98/fln/fasta_files' -m 120gb -t '3-00:00:00'
+       AutoFlow -w template/analyze_real_transcriptomes -n 'cal' -c 50 -s -u 1 -o $REAL_TRANSCRIPTOME_FOLDER/fl_analisys -V '$FASTAS=/mnt/home/users/pab_001_uma/laurafg98/fln/fasta_files' -m 120gb -t '4-00:00:00'
 
 fi

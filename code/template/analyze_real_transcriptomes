@@ -8,7 +8,7 @@ $DB=$SCRATCH/fln/databases
 	full_lengther_next -f $FASTAS/SRR6713217.fasta -g mammals -w [cpu] -c 100
 }
 
-FLN_SoleaSenegalensis){
+%FLN_SoleaSenegalensis){
         . ~soft_bio_267/initializes/init_fln_dev
         ?
         full_lengther_next -f $FASTAS/min2_ctcdO_cp3_filtered.fasta -g vertebrates -w [cpu] -c 200
@@ -17,5 +17,5 @@ FLN_SoleaSenegalensis){
 FLN_SoleaSenegalensis_WithUserDB){
         . ~soft_bio_267/initializes/init_fln_dev
         ?
-        full_lengther_next -f $FASTAS/min2_ctcdO_cp3_filtered.fasta -g vertebrates -w [cpu] -c 200 -u $DB/Actinopterygii/Actinopterygii
+        full_lengther_next -f $FASTAS/min2_ctcdO_cp3_filtered.fasta -g vertebrates -w 8 -c 200 -u $DB/Actinopterygii/Actinopterygii
 }
